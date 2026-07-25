@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alka Store — Aplikasi Premium & Nomor Kosong</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #000000;
+    --surface: #0A0F1E;
+    --surface-2: #101830;
+    --line: #1E2C4E;
+    --text: #EDF1FB;
+    --muted: #7E8CB3;
+    --signal: #3E8CFF;
+    --signal-dim: #2563EB;
+    --signal-glow: rgba(62,140,255,.4);
+    --violet: #7C6CF0;
+    --amber: #F0B429;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{font-family:'Plus Jakarta Sans', sans-serif;}
+  .mono{font-family:'Space Mono', monospace;}
+  a{color:inherit; text-decoration:none;}
+  img,svg{display:block;}
+
+  /* ===== ANIMATED BLACK/BLUE BACKGROUND ===== */
+  .bg-fx{ position:fixed; inset:0; z-index:0; overflow:hidden; background:#000; pointer-events:none; }
+  .bg-fx .lines{
+    position:absolute; inset:-20% -20%;
+    background-image:
+      repeating-linear-gradient(115deg, transparent 0 46px, rgba(62,140,255,.10) 46px 47px, transparent 47px 92px),
+      repeating-linear-gradient(25deg, transparent 0 70px, rgba(62,140,255,.06) 70px 71px, transparent 71px 140px);
+    animation: driftLines 22s linear infinite;
+  }
+  @keyframes driftLines{
+    from{ transform: translate(0,0); }
+    to{ transform: translate(94px,94px); }
+  }
+  .bg-fx .grid{
+    position:absolute; inset:0;
+    background-image: linear-gradient(rgba(62,140,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(62,140,255,.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 15%, transparent 80%);
+  }
+  .bg-fx .blob{
+    position:absolute; border-radius:50%; filter:blur(70px);
+    background: radial-gradient(circle, var(--signal-glow), transparent 70%);
+    opacity:.55; animation: floatBlob 14s ease-in-out infinite;
+  }
+  .bg-fx .blob.b1{ width:420px; height:420px; top:-120px; left:-100px; animation-delay:0s; }
+  .bg-fx .blob.b2{ width:340px; height:340px; top:30%; right:-120px; animation-delay:3s; }
+  .bg-fx .blob.b3{ width:300px; height:300px; bottom:-100px; left:20%; animation-delay:6s; }
+  @keyframes floatBlob{
+    0%,100%{ transform: translate(0,0) scale(1); }
+    50%{ transform: translate(30px,-24px) scale(1.08); }
+  }
+
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px; position:relative; z-index:1;}
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal{ opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.show{ opacity:1; transform:translateY(0); }
+  .reveal-row{ opacity:0; transform:translateX(-16px); transition:opacity .55s ease, transform .55s ease; }
+  .reveal-row.show{ opacity:1; transform:translateX(0); }
+
+  /* ===== HERO entrance ===== */
+  .fade-in{ opacity:0; transform:translateY(18px); animation:fadeUp .8s ease forwards; }
+  @keyframes fadeUp{ to{ opacity:1; transform:translateY(0); } }
+
+  /* NAV */
+  header{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,.7);
+    border-bottom:1px solid var(--line);
+  }
+  nav{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:1120px; margin:0 auto;}
+  .logo{display:flex; align-items:center; gap:10px; font-weight:700; font-size:19px; letter-spacing:.2px; font-family:'Plus Jakarta Sans', sans-serif;}
+  .logo .bar{display:flex; gap:3px; align-items:flex-end; height:18px;}
+  .logo .bar span{width:4px; background:var(--signal); border-radius:1px; display:block;}
+  .logo .bar span:nth-child(1){height:6px;}
+  .logo .bar span:nth-child(2){height:11px;}
+  .logo .bar span:nth-child(3){height:16px;}
+  .logo .bar span:nth-child(4){height:9px;}
+  .navlinks{display:flex; gap:28px; font-size:14px; color:var(--muted);}
+  .navlinks a{position:relative;}
+  .navlinks a::after{content:''; position:absolute; left:0; bottom:-4px; width:0; height:1px; background:var(--signal); transition:width .2s ease;}
+  .navlinks a:hover::after{width:100%;}
+  .navlinks a:hover{color:var(--text);}
+  .nav-cta{
+    background:var(--signal); color:#04122B; font-weight:700; font-size:13px;
+    padding:10px 18px; border-radius:8px; display:flex; align-items:center; gap:8px;
+    box-shadow:0 0 0 1px rgba(62,140,255,.3);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .nav-cta:hover{background:#6BA8FF; transform:translateY(-1px);}
+  @media (max-width:760px){ .navlinks{display:none;} }
+
+  /* HERO */
+  .hero{padding:88px 0 64px; position:relative;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Space Mono', monospace; font-size:12px; color:var(--signal);
+    border:1px solid var(--signal-dim); padding:6px 12px; border-radius:100px;
+    background:rgba(62,140,255,.08);
+  }
+  .eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--signal); box-shadow:0 0 8px var(--signal); animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+  .hero h1{
+    font-size:clamp(34px, 5.5vw, 58px);
+    font-weight:800; line-height:1.05; letter-spacing:-1px; margin:22px 0 18px;
+    max-width:760px;
+  }
+  .hero h1 .accent{color:var(--signal); text-shadow:0 0 24px rgba(62,140,255,.5);}
+  .hero p.lead{color:var(--muted); font-size:17px; max-width:560px; margin-bottom:34px;}
+
+  .hero-actions{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:56px;}
+  .btn-primary{
+    background:var(--signal); color:#04122B; font-weight:700; font-size:15px;
+    padding:14px 24px; border-radius:10px; display:inline-flex; align-items:center; gap:10px;
+    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover{background:#6BA8FF; transform:translateY(-1px); box-shadow:0 6px 22px rgba(62,140,255,.35);}
+  .btn-ghost{
+    border:1px solid var(--line); color:var(--text); font-weight:600; font-size:15px;
+    padding:14px 24px; border-radius:10px; display:inline-flex; align-items:center; gap:10px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .btn-ghost:hover{border-color:var(--signal-dim); color:var(--signal);}
+
+  /* SIGNATURE: sim tray */
+  .signature{
+    border:1px solid var(--line); background:linear-gradient(180deg, var(--surface), var(--surface-2));
+    border-radius:18px; padding:26px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px;
+    position:relative; overflow:hidden; box-shadow:0 0 40px rgba(62,140,255,.08) inset;
+  }
+  .signature::before{
+    content:'SIM TRAY — ALKA STORE'; position:absolute; top:14px; left:26px;
+    font-family:'Space Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:2px;
+  }
+  .slot{ padding:34px 14px 14px; text-align:center; border-right:1px dashed var(--line); }
+  .slot:last-child{border-right:none;}
+  .slot .num{font-family:'Space Mono', monospace; font-size:clamp(15px,2.4vw,19px); font-weight:700; letter-spacing:1px; color:var(--text);}
+  .slot .tag{font-size:11px; color:var(--signal); margin-top:8px; font-weight:600;}
+  @media (max-width:640px){ .signature{grid-template-columns:1fr; } .slot{border-right:none; border-bottom:1px dashed var(--line); padding:20px 14px;} .slot:last-child{border-bottom:none;} .signature::before{position:static; display:block; margin-bottom:8px;} }
+
+  /* ===== INFINITE PHOTO SLIDER (custom-editable) ===== */
+  .marquee-section{ padding:56px 0 20px; }
+  .marquee-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+  .marquee-head .label{
+    font-family:'Space Mono', monospace; font-size:11px; color:var(--signal); letter-spacing:2px; text-transform:uppercase;
+    display:inline-flex; align-items:center; gap:8px; border:1px solid var(--signal-dim); padding:5px 12px 5px 8px;
+    border-radius:100px; background:rgba(62,140,255,.08);
+  }
+  .marquee-head .label::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--signal); box-shadow:0 0 8px var(--signal); }
+  .marquee-hint{font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px;}
+  .marquee-hint .pill{border:1px solid var(--line); border-radius:100px; padding:3px 9px; color:var(--signal); font-weight:600;}
+
+  .marquee-mask{
+    position:relative; overflow:hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee-track{
+    display:flex; gap:16px; width:max-content;
+    animation: scrollLeft 14s linear infinite;
+  }
+  .marquee-track:hover{ animation-play-state: paused; }
+  @keyframes scrollLeft{
+    from{ transform: translateX(0); }
+    to{ transform: translateX(-50%); }
+  }
+  .slide-card{
+    height:76px; border-radius:100px; border:1px solid var(--line);
+    background:transparent;
+    flex-shrink:0; position:relative; overflow:hidden;
+    display:flex; align-items:center; gap:14px; padding:10px 26px 10px 10px;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .slide-card:hover{ transform:translateY(-3px); border-color:var(--signal-dim); box-shadow:0 12px 30px rgba(62,140,255,.25); }
+  .slide-card .icon-box{
+    width:56px; height:56px; border-radius:16px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent; border:1px solid var(--line);
+    font-size:24px;
+    background-size:cover; background-position:center;
+  }
+  .slide-card.has-photo .icon-box{ background-color:transparent; border-color:var(--line); }
+  .slide-card.has-photo .icon-box .ic{ display:none; }
+  .slide-card .lbl{font-size:19px; font-weight:600; color:var(--text); white-space:nowrap; font-family:'Plus Jakarta Sans', sans-serif;}
+
+
+
+  /* SECTION HEADER */
+  .section{padding:72px 0;}
+  .section-head{display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:32px; flex-wrap:wrap; gap:16px;}
+  .section-head .label{
+    font-family:'Space Mono', monospace; font-size:11px; color:var(--signal); letter-spacing:2px; text-transform:uppercase;
+    display:inline-flex; align-items:center; gap:8px; border:1px solid var(--signal-dim); padding:5px 12px 5px 8px;
+    border-radius:100px; background:rgba(62,140,255,.08);
+  }
+  .section-head .label::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--signal); box-shadow:0 0 8px var(--signal); }
+  .section-head h2{font-size:clamp(24px,3vw,34px); font-weight:800; margin-top:10px; letter-spacing:-.5px;}
+  .section-head p{color:var(--muted); font-size:14px; max-width:360px;}
+
+  /* LIST STYLE */
+  .list{
+    border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface);
+    position:relative;
+  }
+  .list::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, transparent, var(--signal), transparent);
+  }
+  .list-row{
+    display:grid; grid-template-columns:44px 1.6fr 1fr .8fr auto; align-items:center; gap:16px;
+    padding:16px 20px; border-bottom:1px solid var(--line);
+    transition:background .15s ease;
+  }
+  .list-row:last-child{border-bottom:none;}
+  .list-row:hover{background:var(--surface-2);}
+  .list-row.head{
+    background:var(--surface-2); font-family:'Space Mono', monospace; font-size:11px; color:var(--muted);
+    letter-spacing:1px; text-transform:uppercase;
+  }
+  .list-row .ico{
+    width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:14px; color:#04122B; background:var(--signal);
+    box-shadow:0 0 0 1px rgba(62,140,255,.25), 0 4px 12px rgba(62,140,255,.35);
+    background-size:cover; background-position:center; overflow:hidden;
+  }
+  .list-row .ico.has-logo{ background-color:var(--surface-2); }
+  .list-row .ico.has-logo .ico-txt{ display:none; }
+  .list-row .title{font-weight:700; font-size:15px; font-family:'Plus Jakarta Sans', sans-serif;}
+  .list-row .desc{font-size:12px; color:var(--muted); font-weight:400; margin-top:2px;}
+  .list-row .meta{font-size:13px; color:var(--muted);}
+  .list-row .price{font-family:'Space Mono', monospace; color:var(--amber); font-weight:700; font-size:14px;}
+  .badge{font-size:11px; font-weight:700; padding:4px 9px; border-radius:100px; width:fit-content;}
+  .badge.gsm{background:rgba(124,108,240,.15); color:var(--violet);}
+  .badge.wa{background:rgba(62,140,255,.15); color:var(--signal);}
+  .list-row .buy-small{
+    font-size:12px; font-weight:700; padding:9px 16px; border-radius:8px; background:var(--signal); color:#04122B; white-space:nowrap;
+    transition:background .15s ease, transform .15s ease;
+  }
+  .list-row .buy-small:hover{ background:#6BA8FF; transform:translateY(-1px); }
+
+  @media (max-width:720px){
+    .list-row{ grid-template-columns:38px 1fr; row-gap:6px; }
+    .list-row .meta{ grid-column:2; }
+    .list-row .price{ grid-column:2; }
+    .list-row .buy-small{ grid-column: 1 / -1; text-align:center; margin-top:6px; }
+    .list-row.head{ display:none; }
+  }
+
+  /* HOW IT WORKS */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .step{border-left:2px solid var(--signal-dim); padding-left:18px;}
+  .step .n{font-family:'Space Mono', monospace; color:var(--signal); font-size:13px; font-weight:700;}
+  .step h3{font-size:16px; margin:8px 0 6px;}
+  .step p{font-size:13px; color:var(--muted);}
+  @media (max-width:760px){ .steps{grid-template-columns:1fr;} }
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line); padding:40px 0; margin-top:20px;}
+  .foot-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
+  .foot-row .muted{color:var(--muted); font-size:13px;}
+
+  /* Floating WA button */
+  .float-wa{
+    position:fixed; right:20px; bottom:20px; z-index:60;
+    background:var(--signal); color:#04122B; font-weight:700; font-size:14px;
+    padding:14px 20px; border-radius:100px; display:flex; align-items:center; gap:10px;
+    box-shadow:0 8px 24px rgba(62,140,255,.45);
+    animation:float 3s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+
+  :focus-visible{outline:2px solid var(--signal); outline-offset:2px;}
+
+  /* ===== ADMIN PICKER MODAL ===== */
+  .admin-modal{
+    position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.65); backdrop-filter:blur(4px);
+    opacity:0; pointer-events:none; transition:opacity .2s ease;
+    padding:20px;
+  }
+  .admin-modal.open{ opacity:1; pointer-events:auto; }
+  .admin-modal-box{
+    width:100%; max-width:360px; background:var(--surface); border:1px solid var(--line);
+    border-radius:16px; padding:22px; position:relative;
+    transform:translateY(12px); transition:transform .2s ease;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .admin-modal.open .admin-modal-box{ transform:translateY(0); }
+  .admin-modal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .admin-modal-head span{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:17px; }
+  .admin-modal-close{
+    background:transparent; border:none; color:var(--muted); font-size:22px; line-height:1;
+    cursor:pointer; padding:4px;
+  }
+  .admin-modal-close:hover{ color:var(--text); }
+  .admin-modal-sub{ font-size:13px; color:var(--muted); margin-bottom:18px; }
+  .admin-modal-list{ display:flex; flex-direction:column; gap:10px; }
+  .admin-option{
+    display:flex; align-items:center; gap:12px; width:100%;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
+    padding:13px 16px; cursor:pointer; color:var(--text); font-size:14px; font-weight:600;
+    transition:border-color .15s ease, background .15s ease;
+    font-family:'Inter', sans-serif; text-align:left;
+  }
+  .admin-option:hover{ border-color:var(--signal-dim); background:rgba(62,140,255,.08); }
+  .admin-option .admin-dot{
+    width:9px; height:9px; border-radius:50%; background:var(--signal); flex-shrink:0;
+    box-shadow:0 0 8px var(--signal);
+  }
+  .admin-option .admin-name{ flex-grow:1; }
+  .admin-option .admin-num{ font-family:'Space Mono', monospace; font-size:11px; color:var(--muted); }
+  .admin-option .admin-arrow{ color:var(--signal); font-weight:700; }
+
+  /* ===== PRODUCT DETAIL MODAL ===== */
+  .product-modal{
+    position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.7); backdrop-filter:blur(4px);
+    opacity:0; pointer-events:none; transition:opacity .2s ease;
+    padding:20px;
+  }
+  .product-modal.open{ opacity:1; pointer-events:auto; }
+  .product-modal-box{
+    width:100%; max-width:380px; max-height:90vh; overflow-y:auto;
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:18px; position:relative;
+    transform:translateY(14px); transition:transform .2s ease;
+    box-shadow:0 24px 70px rgba(0,0,0,.55);
+  }
+  .product-modal.open .product-modal-box{ transform:translateY(0); }
+  .product-modal-close{
+    position:absolute; top:12px; right:12px; z-index:2;
+    width:32px; height:32px; border-radius:9px; border:1px solid var(--line);
+    background:rgba(0,0,0,.55); backdrop-filter:blur(4px); color:var(--text);
+    font-size:20px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .product-modal-close:hover{ border-color:var(--signal-dim); color:var(--signal); }
+  .product-photo{
+    width:100%; aspect-ratio:9/16; max-height:360px;
+    background:linear-gradient(150deg, var(--surface-2), var(--surface)) center/cover no-repeat;
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--muted); font-size:12px; font-family:'Space Mono', monospace;
+  }
+  .product-info{ padding:20px 22px 22px; }
+  .product-modal-title{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:800; font-size:19px; margin-bottom:10px; }
+  .product-row{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    padding:10px 0; border-bottom:1px solid var(--line); font-size:13px;
+  }
+  .product-row:last-of-type{ border-bottom:none; }
+  .product-row .k{ color:var(--muted); flex-shrink:0; }
+  .product-row .v{ text-align:right; color:var(--text); font-weight:600; }
+  .product-row.price .v{ font-family:'Space Mono', monospace; color:var(--amber); font-size:15px; }
+  .product-admins{
+    margin-top:14px; padding:12px 14px; border-radius:10px; border:1px solid var(--line);
+    background:var(--surface-2); font-size:12px; color:var(--muted); display:flex; flex-direction:column; gap:4px;
+  }
+  .product-admins .a-title{ color:var(--signal); font-weight:700; font-size:11px; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px; }
+  .product-admins .a-item{ font-family:'Space Mono', monospace; color:var(--text); }
+  .product-buy-btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; margin-top:18px; padding:14px; border-radius:10px; border:none;
+    background:var(--signal); color:#04122B; font-weight:700; font-size:15px; cursor:pointer;
+    transition:background .15s ease, transform .15s ease;
+  }
+  .product-buy-btn:hover{ background:#6BA8FF; transform:translateY(-1px); }
+</style>
+</head>
+<body>
+
+<div class="bg-fx">
+  <div class="grid"></div>
+  <div class="lines"></div>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
+
+<header>
+  <nav>
+    <div class="logo">
+      <span class="bar"><span></span><span></span><span></span><span></span></span>
+      Alka Store
+    </div>
+    <div class="navlinks">
+      <a href="#apps">Aplikasi Premium</a>
+      <a href="#numbers">Nomor Kosong</a>
+      <a href="#payment">Payment</a>
+      <a href="#maintenance">Jasa Setup</a>
+      <a href="#cara">Cara Beli</a>
+    </div>
+    <a class="nav-cta" href="https://wa.me/62895802901600?text=Halo%20Alka%20Store%2C%20saya%20mau%20tanya-tanya%20produk" target="_blank" rel="noopener">
+      Chat WhatsApp →
+    </a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="eyebrow fade-in" style="animation-delay:.05s"><span class="dot"></span> ONLINE 24 JAM · RESPON CEPAT</span>
+    <h1 class="fade-in" style="animation-delay:.15s">Alka Store By Sean, Sell Plugins <span class="accent">Jasa Setup server minecraft</span>, sampai jasa setup group discord.</h1>
+    <p class="lead fade-in" style="animation-delay:.25s">Alka Store kali ini buka jasa setup bahkan nomor kosong yang bisa kalian beli dan best sell kita adalah aplikasi premium sampai jasa developer server.</p>
+    <div class="hero-actions fade-in" style="animation-delay:.35s">
+      <a class="btn-primary" href="https://wa.me/62895802901600?text=Halo%20Alka%20Store%2C%20saya%20mau%20beli%20produk" target="_blank" rel="noopener">
+        Pesan via WhatsApp →
+      </a>
+      <a class="btn-ghost" href="https://discord.gg/GcrrsAWEhH">Discord Link</a>
+    </div>
+
+    <div class="signature fade-in" style="animation-delay:.45s">
+      <div class="slot"><div class="num">INDONESIA TERSEDIA</div><div class="tag">NOMOR KOSONG</div></div>
+      <div class="slot"><div class="num">ALIGHT MOTION ( BEST SELL)</div><div class="tag">APLIKASI PREMIUM</div></div>
+      <div class="slot"><div class="num">SETUP SERVER SETUP PLUGINS MINECRAFT</div><div class="tag">DEVLELOPER</div></div>
+    </div>
+  </section>
+
+  <!-- INFINITE SLIDER -->
+  <section class="marquee-section reveal">
+    <div class="marquee-head">
+      <div class="label">PAYMANT</div>
+    </div>
+    <div class="marquee-mask">
+      <div class="marquee-track" id="marqueeTrack"></div>
+    </div>
+  </section>
+
+  <!-- APLIKASI PREMIUM -->
+  <section class="section" id="apps">
+    <div class="section-head reveal">
+      <div>
+        <div class="label">01 · Katalog</div>
+        <h2>Aplikasi Premium</h2>
+      </div>
+      <p>Akun premium/sharing untuk kebutuhan hiburan dan produktivitas harian.</p>
+    </div>
+
+    <div class="list">
+      <div class="list-row head">
+        <span></span><span>Produk</span><span>Keterangan</span><span>Harga</span><span>Aksi</span>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('am.jpg')"><span class="ico-txt">AL</span></div>
+        <div><div class="title">Alight Motion</div><div class="desc">ALL FEATURE UNCLOCK</div></div>
+        <div class="meta">EDITING</div>
+        <div class="price">Rp5.000/thn</div>
+        <button type="button" class="buy-small detail-trigger" data-title="Alight Motion" data-img="posteram.png" data-price="Rp5.000/thn" data-garansi="Bergaransi selama masa aktif langganan" data-desc="Semua fitur premium ke-unlock penuh" data-msg="Halo Min Store, saya mau beli AM Premium">Beli</button>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('capcut.jpg')"><span class="ico-txt">CP</span></div>
+        <div><div class="title">CapCut Premium</div><div class="desc">Private Akun 7 Hari [ Garansi 5 Hari ]</div></div>
+        <div class="meta">EDITING</div>
+        <div class="price">Rp9.000/mng</div>
+        <button type="button" class="buy-small detail-trigger" data-title="CapCut Premium" data-img="capcutposter.png" data-price="Rp9.000/mng" data-garansi="Garansi 5 Hari" data-desc="Private Akun 7 Hari" data-msg="Halo Min Store, saya mau beli Capcut Premium">Beli</button>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('net.jpg')"><span class="ico-txt">N</span></div>
+        <div><div class="title">NETFLIX</div><div class="desc">Jaspay Family Private 30 Hari [ 5 Profile ] [ MANUAL ] [ GARANSI 3 HARI ]</div></div>
+        <div class="meta">FILM</div>
+        <div class="price">Rp35.000/bln</div>
+        <button type="button" class="buy-small detail-trigger" data-title="Netflix" data-img="netposter.png" data-price="Rp35.000/bln" data-garansi="Garansi 3 Hari" data-desc="Jaspay Family Private 30 Hari, 5 Profile, Manual" data-msg="Halo Min Store, saya mau beli Netflix Pro">Beli</button>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('canva.jpg')"><span class="ico-txt">C</span></div>
+        <div><div class="title">CANVA PRO</div><div class="desc">Canvaa Pro Desainer</div></div>
+        <div class="meta">EDITING</div>
+        <div class="price">Rp14.000/thn</div>
+        <button type="button" class="buy-small detail-trigger" data-title="Canva Pro" data-img="canvaposter.png" data-price="Rp14.000/thn" data-garansi="Bergaransi selama masa aktif langganan" data-desc="Canva Pro Desainer, akses semua template & fitur" data-msg="Halo Min Store, saya mau beli Canva Premium">Beli</button>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('v.jpg')"><span class="ico-txt">VD</span></div>
+        <div><div class="title">VIDEO PREMIUM</div><div class="desc">Video Premier Platinum</div></div>
+        <div class="meta">Streaming</div>
+        <div class="price">Rp?.000/Tanyakan</div>
+        <button type="button" class="buy-small detail-trigger" data-title="Video Premium" data-img="videoposter.png" data-price="Tanyakan ke admin" data-garansi="Tanyakan detail garansi ke admin" data-desc="Video Premier Platinum" data-msg="Halo Min Store, saya mau beli Video Premium">Beli</button>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('bs.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">BSTATION PREM SHARED</div><div class="desc">BsTation Premium 1 Tahun</div></div>
+        <div class="meta">Streming</div>
+        <div class="price">Rp25.000/thn</div>
+        <button type="button" class="buy-small detail-trigger" data-title="BStation Prem Shared" data-img="bsposter.png" data-price="Rp25.000/thn" data-garansi="Bergaransi selama masa aktif langganan" data-desc="BStation Premium 1 Tahun" data-msg="Halo Min Store, saya mau beli BStation Premium">Beli</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOMOR KOSONG -->
+  <section class="section" id="numbers">
+    <div class="section-head reveal">
+      <div>
+        <div class="label">02 · Katalog</div>
+        <h2>Nomor Kosong</h2>
+      </div>
+      <p>Nomor perdana kosong/belum terpakai, siap didaftarkan WhatsApp atau layanan lain.</p>
+    </div>
+
+    <div class="list">
+      <div class="list-row head">
+        <span></span><span>Nomor</span><span>Operator</span><span>Harga</span><span>Aksi</span>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('yt.jpg')"><span class="ico-txt">BS</span></div> <!-- logo: tambah class="ico has-logo" style="background-image:url('logo-telkomsel.png')" -->
+
+        <div><div class="title">INDONESIA NOMOR</div></div>
+        <div class="meta"><span class="badge gsm">30 Stock</span></div>
+        <div class="price">Rp3.500</div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Min%20Store%2C%20saya%20mau%20beli%20nomor" target="_blank" rel="noopener">Pesan</a>
+      </div>
+
+      <div class="list-row reveal-row">
+       <div class="ico has-logo" style="background-image:url('yt.jpg')"><span class="ico-txt">BS</span></div> <!-- logo: tambah class="ico has-logo" style="background-image:url('logo-indosat.png')" -->
+
+        <div><div class="title">INDONESIA NOMOR</div></div>
+        <div class="meta"><span class="badge wa">3 Stock</span></div>
+        <div class="price">Rp1.000</div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Alka%20Store%2C%20saya%20mau%20beli%20nomor" target="_blank" rel="noopener">Pesan</a>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('yt.jpg')"><span class="ico-txt">BS</span></div> <!-- logo: tambah class="ico has-logo" style="background-image:url('logo-xl.png')" -->
+
+        <div><div class="title">INDONESIA NOMOR</div></div>
+        <div class="meta"><span class="badge gsm">49 Stock</span></div>
+        <div class="price">Rp4.000</div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Min%20Store%2C%20saya%20mau%20beli%20nomor" target="_blank" rel="noopener">Pesan</a>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('malay.jpg')"><span class="ico-txt">BS</span></div> <!-- logo: tambah class="ico has-logo" style="background-image:url('logo-operator-malaysia.png')" -->
+
+        <div><div class="title">MALAYSIA NOMOR</div></div>
+        <div class="meta"><span class="badge wa">0 Stock</span></div>
+        <div class="price">Myr458</div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Min%20Store%2C%20saya%20mau%20beli%20nomor" target="_blank" rel="noopener">Pesan</a>
+      </div>
+    </div>
+    <p style="margin-top:14px; font-size:13px; color:var(--muted);">
+      Stok nomor berubah tiap hari. Chat WhatsApp untuk lihat stok terbaru sesuai operator yang kamu mau.
+    </p>
+  </section>
+
+  <!-- METODE PEMBAYARAN -->
+  <section class="section" id="payment">
+    <div class="section-head reveal">
+      <div>
+        <div class="label">04 · Info</div>
+        <h2>Metode Pembayaran</h2>
+      </div>
+      <p>Beberapa metode masih dalam perbaikan/maintenance, silakan pilih yang berstatus aktif.</p>
+    </div>
+
+    <div class="list">
+      <div class="list-row head">
+        <span></span><span>Metode</span><span>Keterangan</span><span>Status</span><span>Aksi</span>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('dana.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">DANA</div></div>
+        <div class="meta">Transfer saldo DANA</div>
+        <div class="price"><span class="badge wa">Aktif</span></div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Min%2C%20saya%20mau%20bayar%20pakai%20DANA" target="_blank" rel="noopener">Tanya</a>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('qris.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">QRIS All Payment</div></div>
+        <div class="meta">Scan QR, bisa dari e-wallet/bank apa saja</div>
+        <div class="price"><span class="badge wa">Aktif</span></div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Min%2C%20saya%20mau%20bayar%20pakai%20QRIS" target="_blank" rel="noopener">Tanya</a>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('gopay.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">GoPay</div></div>
+        <div class="meta">Transfer saldo GoPay</div>
+        <div class="price"><span class="badge wa">Aktif</span></div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Min%2C%20saya%20mau%20bayar%20pakai%20GoPay" target="_blank" rel="noopener">Tanya</a>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('socialbuz.png')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">Sociabuzz</div></div>
+        <div class="meta">Donasi/pembayaran via Sociabuzz</div>
+        <div class="price"><span class="badge wa">Aktif</span></div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Min%2C%20saya%20mau%20bayar%20pakai%20Sociabuzz" target="_blank" rel="noopener">Tanya</a>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('ovo.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">OVO</div></div>
+        <div class="meta">Sedang perbaikan sistem</div>
+        <div class="price"><span class="badge gsm">Maintenance</span></div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Min%2C%20apakah%20OVO%20sudah%20bisa%20dipakai%3F" target="_blank" rel="noopener">Tanya</a>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('bca.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">Bank BCA</div></div>
+        <div class="meta">Sedang perbaikan sistem</div>
+        <div class="price"><span class="badge gsm">Maintenance</span></div>
+        <a class="buy-small" href="https://wa.me/62895802901600?text=Halo%20Min%2C%20apakah%20BCA%20sudah%20bisa%20dipakai%3F" target="_blank" rel="noopener">Tanya</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAINTENANCE -->
+  <section class="section" id="maintenance">
+    <div class="section-head reveal">
+      <div>
+        <div class="label">03 · Katalog</div>
+        <h2>Setup Plugins & Jasa Lainnya</h2>
+      </div>
+      <p>Bantuan seputar server, backup, dan kebutuhan setup lainnya.</p>
+    </div>
+
+    <div class="list">
+      <div class="list-row head">
+        <span></span><span>Layanan</span><span>Keterangan</span><span></span><span>Aksi</span>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('server.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">Setup server</div></div>
+        <div class="meta">Jasa pasang lobby, login register, optimez server perbaiki server</div>
+        <div class="price"></div>
+        <button type="button" class="buy-small detail-trigger" data-title="Setup Server" data-img="cm.jpg" data-price="Tanyakan ke admin" data-garansi="Sesuai kesepakatan, tanyakan ke admin" data-desc="Jasa pasang lobby, login register, optimasi & perbaikan server" data-msg="Halo Min, saya mau tanya jasa Setup Server">Tanya</button>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('plugins.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">Plugins Setup</div></div>
+        <div class="meta">Plugins Prem, Donut SMP setup, backup senjata legends, AlraId SL</div>
+        <div class="price"></div>
+        <button type="button" class="buy-small detail-trigger" data-title="Plugins Setup" data-img="cm.jpg" data-price="Tanyakan ke admin" data-garansi="Sesuai kesepakatan, tanyakan ke admin" data-desc="Plugins Prem, Donut SMP setup, backup senjata legends, AlraId SL" data-msg="Halo Min, saya mau tanya jasa Plugins Setup">Tanya</button>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('discord.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">Discord Setup</div></div>
+        <div class="meta">Create bot, open ticket, welcome and leave take role dll</div>
+        <div class="price"></div>
+        <button type="button" class="buy-small detail-trigger" data-title="Discord Setup" data-img="cm.jpg" data-price="Tanyakan ke admin" data-garansi="Sesuai kesepakatan, tanyakan ke admin" data-desc="Create bot, open ticket, welcome and leave, take role dll" data-msg="Halo Min, saya mau tanya jasa Discord Setup">Tanya</button>
+      </div>
+
+      <div class="list-row reveal-row">
+        <div class="ico has-logo" style="background-image:url('backup.jpg')"><span class="ico-txt">BS</span></div>
+        <div><div class="title">Backup Server</div></div>
+        <div class="meta">DonutSMP Setup, Economy Setup, RolePlay Setup</div>
+        <div class="price"></div>
+        <button type="button" class="buy-small detail-trigger" data-title="Backup Server" data-img="cm.jpg" data-price="Tanyakan ke admin" data-garansi="Sesuai kesepakatan, tanyakan ke admin" data-desc="DonutSMP Setup, Economy Setup, RolePlay Setup" data-msg="Halo Min, saya mau tanya jasa Backup Server">Tanya</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARA BELI -->
+  <section class="section" id="cara">
+    <div class="section-head reveal">
+      <div>
+        <div class="label">Panduan</div>
+        <h2>Cara Beli</h2>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step reveal-row">
+        <div class="n">STEP 1</div>
+        <h3>Pilih produk</h3>
+        <p>Cek katalog di atas — aplikasi premium, nomor kosong, atau jasa developer.</p>
+      </div>
+      <div class="step reveal-row">
+        <div class="n">STEP 2</div>
+        <h3>Klik tombol Beli</h3>
+        <p>Kamu akan diarahkan langsung ke WhatsApp Alka Store dengan pesan otomatis.</p>
+      </div>
+      <div class="step reveal-row">
+        <div class="n">STEP 3</div>
+        <h3>Konfirmasi & bayar</h3>
+        <p>Admin balas cepat, kirim detail pembayaran, transaksi selesai tanpa perlu daftar akun.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-row">
+    <div class="logo" style="font-size:16px;">
+      <span class="bar"><span></span><span></span><span></span><span></span></span>
+      Alka Store
+    </div>
+    <span class="muted">©alkastore</span>
+    <a class="muted" href="https://wa.me/62895802901600" target="_blank" rel="noopener">WA: 0895-8029-01600</a>
+  </div>
+</footer>
+
+<a class="float-wa" href="https://wa.me/62895802901600?text=Halo%20Alka%20Store%2C%20saya%20mau%20tanya-tanya%20produk" target="_blank" rel="noopener">
+  Chat Admin
+</a>
+
+<script>
+  // ============================================================
+  // KONFIGURASI FOTO GALERI — HANYA BISA DIUBAH DI SINI (LEWAT KODE)
+  // Pengunjung website TIDAK punya cara untuk mengubah ini.
+  //
+  // Cara ganti ke logo brand/partner:
+  // 1. Upload gambar logo kamu ke hosting gambar (contoh: imgur.com,
+  //    atau taruh filenya di folder yang sama dengan file ini, misal "logo-netflix.png")
+  // 2. Isi field "img" dengan URL/path gambar tsb, contoh:
+  //    img: "logo-netflix.png"   atau   img: "https://domainkamu.com/logo.png"
+  // 3. Kalau "img" dikosongkan (null), kartu akan tampil pakai ikon+teks biasa.
+  // ============================================================
+  const slides = [
+    { id:'s1', img:"gopay.jpg", ic:'', lbl:'GOPAY PAYMANT', sub:'Netflix, Disney+, dll' },
+    { id:'s2', img:"dana.jpg",  ic:'', lbl:'DANA PAYMANT', sub:'Spotify Premium' },
+    { id:'s3', img:"qris.jpg", ic:'',  lbl:'QRIS ALL PAYMANT', sub:'Canva Pro, CapCut Pro' },
+    { id:'s4', img:"ovo.jpg", ic:'', lbl:'OVO PAYMANT', sub:'Semua operator' },
+    { id:'s5', img:"bca.jpg", ic:'', lbl:'BANK BCA ( MT ) ', sub:'Recovery & setting' },
+    { id:'s6', img:"socialbuz.png", ic:'', lbl:'SOCIABUZZ PAYMANT', sub:'Tanpa login/daftar' },
+  ];
+
+  const track = document.getElementById('marqueeTrack');
+
+  function buildSlideCard(slide){
+    const card = document.createElement('div');
+    card.className = 'slide-card';
+    card.dataset.id = slide.id;
+
+    if (slide.img) card.classList.add('has-photo');
+
+    card.innerHTML = `
+      <div class="icon-box" style="${slide.img ? `background-image:url(${slide.img})` : ''}">
+        <span class="ic">${slide.ic}</span>
+      </div>
+      <div class="lbl">${slide.lbl}</div>
+    `;
+
+    return card;
+  }
+
+  // render dua set (untuk loop tanpa putus)
+  [1,2].forEach(() => {
+    slides.forEach(s => track.appendChild(buildSlideCard(s)));
+  });
+
+  // ===== Scroll reveal animation =====
+  const revealEls = document.querySelectorAll('.reveal, .reveal-row');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting){
+        setTimeout(() => entry.target.classList.add('show'), i * 40);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => io.observe(el));
+
+  // ============================================================
+  // DAFTAR ADMIN — GANTI NOMOR DI SINI SAJA
+  // Setiap tombol WhatsApp di seluruh halaman otomatis akan
+  // menampilkan pilihan admin ini dulu sebelum diarahkan ke WA.
+  // Format nomor: kode negara tanpa "+" dan tanpa "0" di depan.
+  // Contoh: 0895802901600 -> 62895802901600
+  // ============================================================
+  const ADMINS = [
+    { name: 'Admin 1 — Sean', wa: '62895802901600' },
+    { name: 'Admin 2 — Belial', wa: '6289691346023' },
+  ];
+
+  (function initAdminPicker(){
+    const modal = document.createElement('div');
+    modal.className = 'admin-modal';
+    modal.innerHTML = `
+      <div class="admin-modal-box">
+        <div class="admin-modal-head">
+          <span>Pilih Admin</span>
+          <button type="button" class="admin-modal-close" aria-label="Tutup">&times;</button>
+        </div>
+        <p class="admin-modal-sub">Silakan pilih admin yang mau kamu hubungi via WhatsApp:</p>
+        <div class="admin-modal-list"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const list = modal.querySelector('.admin-modal-list');
+    const closeModal = () => modal.classList.remove('open');
+    modal.querySelector('.admin-modal-close').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    let pendingMessage = '';
+
+    ADMINS.forEach(admin => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'admin-option';
+      btn.innerHTML = `
+        <span class="admin-dot"></span>
+        <span class="admin-name">${admin.name}</span>
+        <span class="admin-num">${admin.wa}</span>
+        <span class="admin-arrow">→</span>
+      `;
+      btn.addEventListener('click', () => {
+        const url = 'https://wa.me/' + admin.wa + (pendingMessage ? ('?text=' + pendingMessage) : '');
+        window.open(url, '_blank', 'noopener');
+        closeModal();
+      });
+      list.appendChild(btn);
+    });
+
+    // Fungsi global: buka pilihan admin dengan pesan tertentu (dipakai juga oleh modal detail produk)
+    window.openAdminPicker = function(message){
+      pendingMessage = message || '';
+      modal.classList.add('open');
+    };
+
+    // Tangkap semua tombol/link WhatsApp yang sudah ada di halaman
+    document.querySelectorAll('a[href^="https://wa.me/"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        let msg = '';
+        try {
+          msg = new URL(a.href).searchParams.get('text') || '';
+        } catch (err) {
+          msg = '';
+        }
+        window.openAdminPicker(msg);
+      });
+    });
+  })();
+
+  // ============================================================
+  // MODAL DETAIL PRODUK — muncul saat tombol "Beli"/"Tanya" di
+  // Aplikasi Premium & Setup Plugins/Jasa Lainnya diklik.
+  // Menampilkan foto 9:16, harga, garansi, lalu tombol Beli
+  // yang lanjut ke pilihan nomor admin di atas.
+  //
+  // Cara ganti foto 9:16 tiap produk: cari atribut data-img pada
+  // tombol "Beli"/"Tanya" produk terkait di HTML, lalu ganti nama
+  // filenya dengan foto kamu sendiri (format potrait/9:16, contoh
+  // 1080x1920px), taruh di folder yang sama dengan file ini.
+  // ============================================================
+  (function initProductModal(){
+    const modal = document.createElement('div');
+    modal.className = 'product-modal';
+    modal.innerHTML = `
+      <div class="product-modal-box">
+        <button type="button" class="product-modal-close" aria-label="Tutup">&times;</button>
+        <div class="product-photo"></div>
+        <div class="product-info">
+          <div class="product-modal-title"></div>
+          <div class="product-row"><span class="k">Keterangan</span><span class="v product-desc"></span></div>
+          <div class="product-row price"><span class="k">Harga</span><span class="v product-price"></span></div>
+          <div class="product-row"><span class="k">Garansi</span><span class="v product-garansi"></span></div>
+          <div class="product-admins">
+            <div class="a-title">Nomor Admin</div>
+            <div class="admin-list-text"></div>
+          </div>
+          <button type="button" class="product-buy-btn">Beli Sekarang →</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector('.admin-list-text').innerHTML =
+      ADMINS.map(a => `<div class="a-item">${a.name}: ${a.wa}</div>`).join('');
+
+    const photoEl = modal.querySelector('.product-photo');
+    const titleEl = modal.querySelector('.product-modal-title');
+    const descEl = modal.querySelector('.product-desc');
+    const priceEl = modal.querySelector('.product-price');
+    const garansiEl = modal.querySelector('.product-garansi');
+    const buyBtn = modal.querySelector('.product-buy-btn');
+
+    const closeModal = () => modal.classList.remove('open');
+    modal.querySelector('.product-modal-close').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    let currentMsg = '';
+    buyBtn.addEventListener('click', () => {
+      closeModal();
+      window.openAdminPicker(encodeURIComponent(currentMsg));
+    });
+
+    document.querySelectorAll('.detail-trigger').forEach(btn => {
+      btn.addEventListener('click', () => {
+        titleEl.textContent = btn.dataset.title || '';
+        descEl.textContent = btn.dataset.desc || '-';
+        priceEl.textContent = btn.dataset.price || '-';
+        garansiEl.textContent = btn.dataset.garansi || '-';
+        currentMsg = btn.dataset.msg || '';
+        if (btn.dataset.img) {
+          photoEl.style.backgroundImage = `url(${btn.dataset.img})`;
+          photoEl.textContent = '';
+        } else {
+          photoEl.style.backgroundImage = '';
+          photoEl.textContent = 'FOTO 9:16';
+        }
+        modal.classList.add('open');
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
