@@ -21,6 +21,9 @@
     --amber: #F0B429;
     --header-bg: rgba(10,15,28,.72);
     --header-shadow: 0 12px 34px rgba(0,0,0,.45);
+    --line-fx-1: rgba(62,140,255,.10);
+    --line-fx-2: rgba(62,140,255,.06);
+    --grid-fx: rgba(62,140,255,.05);
   }
   html[data-theme="light"]{
     --bg: #F4F6FB;
@@ -31,15 +34,32 @@
     --muted: #5C6884;
     --signal: #2563EB;
     --signal-dim: #1D4ED8;
-    --signal-glow: rgba(37,99,235,.22);
+    --signal-glow: rgba(37,99,235,.38);
     --violet: #7C3AED;
     --amber: #B45309;
     --header-bg: rgba(255,255,255,.78);
     --header-shadow: 0 12px 34px rgba(16,22,43,.14);
+    --line-fx-1: rgba(37,99,235,.24);
+    --line-fx-2: rgba(37,99,235,.15);
+    --grid-fx: rgba(37,99,235,.11);
   }
-  html[data-theme="light"] .bg-fx .lines,
-  html[data-theme="light"] .bg-fx .grid{ opacity:.35; }
-  html[data-theme="light"] .bg-fx .blob{ opacity:.25; }
+  html[data-theme="light"] .bg-fx .blob{ opacity:.6; filter:blur(95px); }
+  html[data-theme="light"] .bg-fx::before{
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(60% 45% at 18% 0%, rgba(255,255,255,.9), transparent 70%),
+      radial-gradient(55% 50% at 85% 15%, rgba(37,99,235,.16), transparent 70%),
+      radial-gradient(50% 40% at 50% 100%, rgba(124,58,237,.10), transparent 75%);
+    pointer-events:none;
+  }
+  html[data-theme="light"] .bg-fx .lines{
+    background-image:
+      repeating-linear-gradient(115deg, transparent 0 44px, var(--line-fx-1) 44px 46px, transparent 46px 90px),
+      repeating-linear-gradient(25deg, transparent 0 68px, var(--line-fx-2) 68px 70px, transparent 70px 138px);
+  }
+  html[data-theme="light"] .bg-fx .grid{
+    mask-image: radial-gradient(ellipse 90% 65% at 50% 0%, #000 30%, transparent 85%);
+  }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{
@@ -60,8 +80,8 @@
   .bg-fx .lines{
     position:absolute; inset:-20% -20%;
     background-image:
-      repeating-linear-gradient(115deg, transparent 0 46px, rgba(62,140,255,.10) 46px 47px, transparent 47px 92px),
-      repeating-linear-gradient(25deg, transparent 0 70px, rgba(62,140,255,.06) 70px 71px, transparent 71px 140px);
+      repeating-linear-gradient(115deg, transparent 0 46px, var(--line-fx-1) 46px 47px, transparent 47px 92px),
+      repeating-linear-gradient(25deg, transparent 0 70px, var(--line-fx-2) 70px 71px, transparent 71px 140px);
     animation: driftLines 22s linear infinite;
   }
   @keyframes driftLines{
@@ -70,7 +90,7 @@
   }
   .bg-fx .grid{
     position:absolute; inset:0;
-    background-image: linear-gradient(rgba(62,140,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(62,140,255,.05) 1px, transparent 1px);
+    background-image: linear-gradient(var(--grid-fx) 1px, transparent 1px), linear-gradient(90deg, var(--grid-fx) 1px, transparent 1px);
     background-size: 64px 64px;
     mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 15%, transparent 80%);
   }
@@ -171,7 +191,14 @@
   }
 
   /* HERO */
-  .hero{padding:88px 0 64px; position:relative;}
+  .hero{padding:88px 0 64px; position:relative; display:flex; flex-direction:column; align-items:center; text-align:center;}
+  .hero-textbox{
+    display:flex; flex-direction:column; align-items:center;
+    max-width:800px; padding:40px 36px; margin-bottom:30px;
+    border:1px solid var(--line); border-radius:22px;
+    background:rgba(127,140,179,.06);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  }
   .eyebrow{
     display:inline-flex; align-items:center; gap:8px;
     font-family:'Space Mono', monospace; font-size:12px; color:var(--signal);
@@ -189,9 +216,9 @@
   .hero h1 .accent{color:var(--signal); text-shadow:0 0 24px rgba(62,140,255,.5);}
   .hero p.lead{color:var(--muted); font-size:17px; max-width:560px; margin-bottom:34px;}
 
-  .hero-actions{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:22px;}
+  .hero-actions{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:22px; justify-content:center;}
 
-  .trust-badges{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:40px; }
+  .trust-badges{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:40px; justify-content:center; }
   .trust-badge{
     font-size:12.5px; font-weight:600; color:var(--muted);
     border:1px solid var(--line); border-radius:100px; padding:6px 13px;
@@ -213,6 +240,7 @@
 
   /* SIGNATURE: sim tray */
   .signature{
+    width:100%;
     border:1px solid var(--line); background:linear-gradient(180deg, var(--surface), var(--surface-2));
     border-radius:18px; padding:26px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px;
     position:relative; overflow:hidden; box-shadow:0 0 40px rgba(62,140,255,.08) inset;
@@ -345,7 +373,28 @@
   @media (max-width:760px){ .steps{grid-template-columns:1fr;} }
 
   /* FOOTER */
-  footer{border-top:1px solid var(--line); padding:40px 0; margin-top:20px;}
+  footer{border-top:1px solid var(--line); padding:56px 0 0; margin-top:20px;}
+  .foot-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:40px; padding-bottom:44px;}
+  .foot-brand .logo{ font-size:17px; margin-bottom:14px; }
+  .foot-brand p{ color:var(--muted); font-size:13.5px; line-height:1.7; max-width:320px; }
+  .foot-heading{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:800; font-size:15px; margin-bottom:16px; }
+  .foot-links{ display:flex; flex-direction:column; gap:11px; }
+  .foot-links a{ color:var(--muted); font-size:13.5px; transition:color .15s ease; }
+  .foot-links a:hover{ color:var(--text); }
+  .foot-support-text{ color:var(--muted); font-size:13.5px; line-height:1.7; margin-bottom:18px; max-width:280px; }
+  .foot-social{ display:flex; flex-wrap:wrap; gap:10px; }
+  .foot-social a{
+    display:inline-flex; align-items:center; gap:8px; padding:10px 16px;
+    border-radius:10px; font-size:13.5px; font-weight:700; color:#FFFFFF;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  .foot-social a:hover{ transform:translateY(-2px); filter:brightness(1.08); }
+  .foot-social a svg{ width:17px; height:17px; flex-shrink:0; }
+  .foot-social a.wa{ background:#25D366; }
+  .foot-social a.dc{ background:#5865F2; }
+  .foot-bottom{ border-top:1px solid var(--line); padding:20px 0; text-align:center; }
+  .foot-bottom span{ color:var(--muted); font-size:12.5px; }
+  @media (max-width:760px){ .foot-grid{ grid-template-columns:1fr; gap:32px; } }
   .foot-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
   .foot-row .muted{color:var(--muted); font-size:13px;}
 
@@ -611,9 +660,11 @@
 
   <!-- HERO -->
   <section class="hero">
-    <span class="eyebrow fade-in" style="animation-delay:.05s"><span class="dot"></span> ONLINE 24 JAM · RESPON CEPAT</span>
-    <h1 class="fade-in" style="animation-delay:.15s">Satu tempat buat semua kebutuhan akun premium kamu, dari aplikasi harian sampai<span class="accent"> jasa setup server</span>.</h1>
-    <p class="lead fade-in" style="animation-delay:.25s">Alka Store jual akun premium, nomor WhatsApp kosong, dan jasa setup server Minecraft & Discord. Harga bersahabat, transaksi lewat WhatsApp admin, dan tiap pembelian bergaransi.</p>
+    <div class="hero-textbox">
+      <span class="eyebrow fade-in" style="animation-delay:.05s"><span class="dot"></span> ONLINE 24 JAM · RESPON CEPAT</span>
+      <h1 class="fade-in" style="animation-delay:.15s">Satu tempat buat semua kebutuhan akun premium kamu, dari aplikasi harian sampai<span class="accent"> jasa setup server</span>.</h1>
+      <p class="lead fade-in" style="animation-delay:.25s">Alka Store jual akun premium, nomor WhatsApp kosong, dan jasa setup server Minecraft & Discord. Harga bersahabat, transaksi lewat WhatsApp admin, dan tiap pembelian bergaransi.</p>
+    </div>
     <div class="hero-actions fade-in" style="animation-delay:.35s">
       <a class="btn-primary" href="https://wa.me/62895802901600?text=Halo%20Alka%20Store%2C%20saya%20mau%20beli%20produk" target="_blank" rel="noopener">
         Pesan via WhatsApp →
@@ -950,13 +1001,44 @@
 </main>
 
 <footer>
-  <div class="wrap foot-row">
-    <div class="logo" style="font-size:16px;">
-      <span class="bar"><span></span><span></span><span></span><span></span></span>
-      Alka Store
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <div class="logo">
+        <span class="bar"><span></span><span></span><span></span><span></span></span>
+        Alka Store
+      </div>
+      <p>Toko akun premium, nomor WhatsApp kosong, dan jasa setup server terpercaya. Online 24 jam, transaksi cepat dan bergaransi.</p>
     </div>
-    <span class="muted">©alkastore</span>
-    <a class="muted" href="https://wa.me/62895802901600" target="_blank" rel="noopener">WA: 0895-8029-01600</a>
+
+    <div>
+      <div class="foot-heading">Navigasi</div>
+      <div class="foot-links">
+        <a href="#apps">Aplikasi Premium</a>
+        <a href="#numbers">Nomor Kosong</a>
+        <a href="#payment">Payment</a>
+        <a href="#maintenance">Jasa Setup</a>
+        <a href="#cara">Cara Beli</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="foot-heading">Bantuan</div>
+      <p class="foot-support-text">Butuh bantuan? Hubungi tim kami langsung lewat sosial media di bawah ini.</p>
+      <div class="foot-social">
+        <a class="wa" href="https://wa.me/62895802901600?text=Halo%20Alka%20Store%2C%20saya%20mau%20tanya-tanya%20produk" target="_blank" rel="noopener">
+          <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.004 3C9.106 3 3.5 8.605 3.5 15.5c0 2.36.656 4.564 1.795 6.447L3 29l7.234-2.257A12.44 12.44 0 0 0 16.004 28C22.9 28 28.5 22.395 28.5 15.5S22.9 3 16.004 3Zm0 22.7a10.16 10.16 0 0 1-5.19-1.42l-.372-.222-4.29 1.34 1.36-4.18-.243-.386a10.18 10.18 0 0 1-1.57-5.332c0-5.63 4.583-10.2 10.305-10.2 5.72 0 10.304 4.57 10.304 10.2 0 5.63-4.584 10.2-10.304 10.2Zm5.66-7.64c-.31-.156-1.83-.902-2.113-1.005-.283-.104-.49-.156-.696.156-.207.312-.8 1.005-.98 1.212-.18.208-.362.234-.672.078-.31-.156-1.31-.483-2.494-1.539-.922-.822-1.545-1.837-1.726-2.148-.18-.312-.02-.48.136-.636.14-.14.31-.364.465-.546.155-.182.207-.312.31-.52.104-.208.052-.39-.026-.546-.078-.156-.696-1.68-.954-2.3-.251-.603-.507-.522-.696-.532l-.593-.01c-.207 0-.542.078-.826.39-.283.312-1.08 1.057-1.08 2.578s1.106 2.99 1.26 3.198c.155.208 2.176 3.323 5.27 4.659.736.318 1.31.508 1.758.65.738.235 1.41.202 1.941.122.592-.088 1.83-.748 2.088-1.47.259-.72.259-1.337.181-1.47-.077-.13-.284-.208-.594-.364Z"/></svg>
+          WhatsApp
+        </a>
+        <a class="dc" href="https://discord.gg/GcrrsAWEhH" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.32 5.36A17.5 17.5 0 0 0 15.9 4c-.2.36-.44.85-.6 1.24a16.3 16.3 0 0 0-4.6 0A8 8 0 0 0 10.1 4a17.6 17.6 0 0 0-4.42 1.36C2.9 9.4 2.2 13.3 2.5 17.16A17.6 17.6 0 0 0 7.85 20c.43-.58.8-1.2 1.13-1.86-.62-.23-1.2-.52-1.76-.86.15-.11.29-.22.43-.34a12.6 12.6 0 0 0 10.7 0c.14.12.28.23.43.34-.56.34-1.15.63-1.76.86.32.66.7 1.28 1.13 1.86 2.13-.66 4.05-1.63 5.35-2.84.35-4.85-.72-8.7-3.02-11.8ZM9.68 14.9c-.8 0-1.46-.75-1.46-1.66 0-.92.64-1.67 1.46-1.67.82 0 1.48.76 1.46 1.67 0 .91-.64 1.66-1.46 1.66Zm5.64 0c-.8 0-1.46-.75-1.46-1.66 0-.92.64-1.67 1.46-1.67.83 0 1.48.76 1.46 1.67 0 .91-.63 1.66-1.46 1.66Z"/></svg>
+          Discord
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-bottom">
+    <span>© 2026 Alka Store. Semua hak dilindungi.</span>
   </div>
 </footer>
 
